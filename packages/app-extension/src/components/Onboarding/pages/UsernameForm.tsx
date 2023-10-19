@@ -1,9 +1,10 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
-import { PrimaryButton,TextInput } from "@coral-xyz/react-common";
+import { PrimaryButton, TextInput } from "@coral-xyz/react-common";
 import { useCustomTheme } from "@coral-xyz/themes";
 import { AlternateEmail } from "@mui/icons-material";
 import { Box, InputAdornment } from "@mui/material";
 
+// import { useSafeRef } from "tamagui";
 import { Header, SubtextParagraph } from "../../common";
 
 export const UsernameForm = ({
@@ -11,11 +12,13 @@ export const UsernameForm = ({
   onNext,
 }: {
   inviteCode: string;
-  onNext: (username: string) => void;
+  onNext: (username: string, firstname: string, lastname: string) => void;
 }) => {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const theme = useCustomTheme();
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
 
   useEffect(() => {
     setError("");
@@ -34,12 +37,12 @@ export const UsernameForm = ({
         const json = await res.json();
         if (!res.ok) throw new Error(json.message || "There was an error");
 
-        onNext(username);
+        onNext(username, firstname, lastname);
       } catch (err: any) {
         setError(err.message);
       }
     },
-    [username]
+    [username, firstname, lastname]
   );
 
   return (
@@ -74,6 +77,66 @@ export const UsernameForm = ({
         }}
       >
         <Box style={{ marginBottom: "16px" }}>
+          <TextInput
+            inputProps={{
+              name: "First Name",
+              autoComplete: "off",
+              spellCheck: "false",
+              autoFocus: true,
+            }}
+            placeholder="First Name"
+            type="text"
+            value={firstname}
+            setValue={(e) => {
+              setFirstname(
+                e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "")
+              );
+            }}
+            error={error ? true : false}
+            errorMessage={error}
+            startAdornment={
+              <InputAdornment position="start">
+                <AlternateEmail
+                  style={{
+                    color: theme.custom.colors.secondary,
+                    fontSize: 18,
+                    marginRight: -2,
+                    userSelect: "none",
+                  }}
+                />
+              </InputAdornment>
+            }
+          />
+          <TextInput
+            inputProps={{
+              name: "Last Name",
+              autoComplete: "off",
+              spellCheck: "false",
+              autoFocus: true,
+            }}
+            placeholder="Last Name"
+            type="text"
+            value={lastname}
+            setValue={(e) => {
+              setLastname(
+                e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "")
+              );
+            }}
+            error={error ? true : false}
+            errorMessage={error}
+            startAdornment={
+              <InputAdornment position="start">
+                <AlternateEmail
+                  style={{
+                    color: theme.custom.colors.secondary,
+                    fontSize: 18,
+                    marginRight: -2,
+                    userSelect: "none",
+                  }}
+                />
+              </InputAdornment>
+            }
+          />
           <TextInput
             inputProps={{
               name: "username",
